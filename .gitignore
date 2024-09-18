@@ -48,7 +48,6 @@ nosetests.xml
 pytest.xml
 .testmondata
 .pytest_cache/
-src/
 
 # Jupyter Notebook
 .ipynb_checkpoints
