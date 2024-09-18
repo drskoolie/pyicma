@@ -3,11 +3,16 @@ from anytree import Node, RenderTree
 import arabic_reshaper
 from bidi.algorithm import get_display
 
+INTRODUCTORY_WORDS = [
+    'حَدَّثَنَا', 'أَخْبَرَنَا', 'سَمِعْتُ', 'ذَكَرَ', 'رَوَى', 
+    'قَالَ', 'قَالَ:','عَنْ', 'عَنِ', 'أَنْبَأَنَا', 'يُقَالُ', 'زَعَمَ',
+    'أُرِيْنَا', 'يُرْوَى', 'حَدَّثَنِي', 'بَلَغَنَا', 'ثُمَّ', 'يُحَدِّثُ', 
+]
+
 def fix_arabic_text(text):
     reshaped_text = arabic_reshaper.reshape(text)  # Correct letter shapes
     bidi_text = get_display(reshaped_text)  # Apply bidi transformation
     return bidi_text
-
 
 class Hadith():
     def __init__(self, raw_text):
@@ -32,14 +37,11 @@ class Hadith():
         return isnad_lines, matn_section
 
     def remove_introductory_words(self, isnad):
-        # List of common introductory words to remove
-        words_to_remove = ['حَدَّثَنَا', 'قَالَ', 'عَنْ', 'عَنِ']
-        
         # Split the line into individual words
         words = isnad.split()
         
         # Filter out the words that match any of the common introductory words
-        filtered_words = [word for word in words if word not in words_to_remove]
+        filtered_words = [word for word in words if word not in INTRODUCTORY_WORDS]
         
         # Join the remaining words to form the narrator's full name
         narrator_name = ' '.join(filtered_words)
@@ -75,8 +77,9 @@ class Hadith():
     def print_hadith(self):
         # Fix and print narrators using fix_arabic_text
         print("Isnad:")
-        for isnad in self.isnads:
+        for isnad, narrator in zip(self.isnads, self.narrators):
             print(fix_arabic_text(isnad))
+            print(fix_arabic_text(narrator))
 
         # Fix and print matn using fix_arabic_text
         print("\nMatn:")
