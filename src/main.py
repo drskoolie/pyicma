@@ -1,4 +1,6 @@
 import os
+import re
+
 from hadith import Hadith
 
 def load_hadith_from_file(file_path):
@@ -7,14 +9,15 @@ def load_hadith_from_file(file_path):
 
 if __name__ == "__main__":
     # Directory containing the hadith text files
-    hadiths_dir = os.path.join(os.path.dirname(__file__), '..', 'hadiths')
+    hadith_dir = os.path.join(os.path.dirname(__file__), '..', 'hadiths')
+    hadith_paths =  sorted(os.listdir(hadith_dir), key=lambda x: int(re.search(r'\d+', x).group()))
 
     # Load and process each hadith file
-    for file_name in sorted(os.listdir(hadiths_dir)):
-        if file_name.endswith('.txt'):
-            file_path = os.path.join(hadiths_dir, file_name)
+    for hadith_path in hadith_paths:
+        if hadith_path.endswith('.txt'):
+            file_path = os.path.join(hadith_dir, hadith_path)
             hadith_text = load_hadith_from_file(file_path)
             hadith = Hadith(hadith_text)
-            print(f"Processing '{file_name}'")
+            print(f"Processing '{hadith_path}'")
             hadith.print_hadith()
             print("----\n")
