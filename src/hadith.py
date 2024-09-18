@@ -1,13 +1,9 @@
+import re
 from anytree import Node, RenderTree
 
 import arabic_reshaper
 from bidi.algorithm import get_display
 
-INTRODUCTORY_WORDS = [
-    'حَدَّثَنَا', 'أَخْبَرَنَا', 'سَمِعْتُ', 'ذَكَرَ', 'رَوَى', 
-    'قَالَ', 'قَالَ:','عَنْ', 'عَنِ', 'أَنْبَأَنَا', 'يُقَالُ', 'زَعَمَ',
-    'أُرِيْنَا', 'يُرْوَى', 'حَدَّثَنِي', 'بَلَغَنَا', 'ثُمَّ', 'يُحَدِّثُ', 
-]
 
 def fix_arabic_text(text):
     reshaped_text = arabic_reshaper.reshape(text)  # Correct letter shapes
@@ -16,9 +12,24 @@ def fix_arabic_text(text):
 
 class Hadith():
     def __init__(self, raw_text):
+        self.introductory_words = [
+            'حَدَّثَنَا', 'أَخْبَرَنَا', 'سَمِعْتُ', 'ذَكَرَ', 'رَوَى', 
+            'قَالَ', 'قَالَ:','عَنْ', 'عَنِ', 'أَنْبَأَنَا', 'يُقَالُ', 'زَعَمَ',
+            'أُرِيْنَا', 'يُرْوَى', 'حَدَّثَنِي', 'بَلَغَنَا', 'ثُمَّ',
+            'يُحَدِّثُ', 'في', 'حديثه',
+        ]
+
+        self.introductory_words = [self.remove_tashkeel(word) for word in self.introductory_words]
+
         self.raw_text = raw_text
         self.isnads, self.matn = self.extract_isnads_and_matn(self.raw_text)
         self.narrators = self.extract_narrators(self.isnads)
+
+
+    def remove_tashkeel(self, text):
+        # Unicode ranges for tashkeel (Arabic diacritics)
+        tashkeel_regex = re.compile(r'[\u0610-\u061A\u064B-\u065F\u0670]')
+        return tashkeel_regex.sub('', text)
 
     def extract_isnads_and_matn(self, raw_text):
         # Split the text by the new line separating the isnad and matn
@@ -41,7 +52,7 @@ class Hadith():
         words = isnad.split()
         
         # Filter out the words that match any of the common introductory words
-        filtered_words = [word for word in words if word not in INTRODUCTORY_WORDS]
+        filtered_words = [word for word in words if self.remove_tashkeel(word) not in self.introductory_words]
         
         # Join the remaining words to form the narrator's full name
         narrator_name = ' '.join(filtered_words)
@@ -76,9 +87,8 @@ class Hadith():
 
     def print_hadith(self):
         # Fix and print narrators using fix_arabic_text
-        print("Isnad:")
-        for isnad, narrator in zip(self.isnads, self.narrators):
-            print(fix_arabic_text(isnad))
+        print("Narrators:")
+        for narrator in self.narrators:
             print(fix_arabic_text(narrator))
 
         # Fix and print matn using fix_arabic_text
