@@ -33,7 +33,7 @@ class Hadith():
 
     def extract_isnads_and_matn(self, raw_text):
         # Split the text by the new line separating the isnad and matn
-        parts = raw_text.strip().split("\n\n", 1)  # Split once at the first empty line
+        parts = raw_text.strip().split("\n\n")
         
         if len(parts) == 2:
             isnad_section = parts[0]
@@ -100,6 +100,10 @@ class Hadith():
         # Fix and print matn using fix_arabic_text
         print("\nMatn:")
         print(fix_arabic_text(self.matn))
+
+        if self.comment:
+            print("\nComment:")
+            print(fix_arabic_text(self.comment))
 
 
 if __name__ == "__main__":
