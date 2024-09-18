@@ -22,7 +22,7 @@ class Hadith():
         self.introductory_words = [self.remove_tashkeel(word) for word in self.introductory_words]
 
         self.raw_text = raw_text
-        self.isnads, self.matn = self.extract_isnads_and_matn(self.raw_text)
+        self.isnads, self.matn, self.comment = self.extract_isnads_and_matn(self.raw_text)
         self.narrators = self.extract_narrators(self.isnads)
 
 
@@ -38,6 +38,12 @@ class Hadith():
         if len(parts) == 2:
             isnad_section = parts[0]
             matn_section = parts[1]
+            comment_section = ""
+        elif len(parts) == 3:
+            isnad_section = parts[0]
+            matn_section = parts[1]
+            comment_section = parts[2]
+
         else:
             isnad_section = ""
             matn_section = raw_text
@@ -45,7 +51,7 @@ class Hadith():
         # Split the isnad part into individual lines (narrators)
         isnad_lines = isnad_section.strip().split("\n")
         
-        return isnad_lines, matn_section
+        return isnad_lines, matn_section, comment_section
 
     def remove_introductory_words(self, isnad):
         # Split the line into individual words
