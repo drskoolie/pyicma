@@ -2,6 +2,8 @@ import csv
 import hashlib
 import sqlite3
 
+from hadith import Hadith
+
 class HadithDatabase:
     def __init__(self, db_name='data/hadith.db'):
         # Initialize and connect to the SQLite database
@@ -117,14 +119,19 @@ class HadithDatabase:
         self.cursor.execute('DELETE FROM Narrators')
         self.conn.commit()
 
-    def add_hadith(self, matn, comments):
+    def insert_hadith(self, hadith: Hadith):
         # Insert a new hadith into the Hadiths table
         self.cursor.execute('''
             INSERT INTO Hadiths (matn, comments)
             VALUES (?, ?)
-        ''', (matn, comments))
+        ''', (hadith.matn, hadith.comment))
         self.conn.commit()
-        return self.cursor.lastrowid  # Return the new hadith's ID
+
+        hadith_id = self.cursor.lastrowid  # Return the new hadith's ID
+
+        self.link_narrators_in_isnad(hadith_id, hadith.narrators)
+
+        return hadith_id
 
     def add_narrator(self, name, location=None, death_date=None, link=None):
         # Insert a new narrator into the Narrators table
@@ -188,19 +195,31 @@ class HadithDatabase:
 
 # Example usage
 if __name__ == "__main__":
+    # Example hadith text
+    hadith_text = """
+    حَدَّثَنَا يُونُسُ قَالَ
+    حَدَّثَنَا أَبُو دَاوُدَ
+    قَالَ حَدَّثَنَا شُعْبَةُ
+    عَنْ قَتَادَةَ
+    عَنْ زُرَارَةَ
+    عَنْ أَبِي هُرَيْرَةَ
+    عَنِ النَّبِيِّ صلى الله عليه وسلم قَالَ
+
+    إِذَا بَاتَتِ الْمَرْأَةُ هَاجِرَةً لِفِرَاشِ زَوْجِهَا
+    لَعَنَتْهَا الْمَلَائِكَةُ حَتَّى تُصْبِحَ أَوْ تُرَاجِعَ
+
+    "شَكَّ أَبُو دَاوُدَ"
+    """
+
+    my_hadith = Hadith(hadith_text)
+    my_hadith.print_hadith()
+
     db = HadithDatabase()
 
     # Read narrators from the CSV file
     db.read_narrators_from_csv()
 
-    # Add a hadith
-    hadith_id = db.add_hadith(
-        "This is the matn of the hadith", "This is a comment from the last narrator"
-    )
-
-    # Add narrators and link them in an isnad chain
-    narrators = ["List1", "List2" ]
-    db.link_narrators_in_isnad(hadith_id, narrators)
+    hadith_id = db.insert_hadith(my_hadith)
 
     # Query and print the hadith with its isnad
     hadith_data = db.get_hadith_with_isnad(hadith_id)
