@@ -8,8 +8,7 @@ class HadithTree:
 
     def fetch_hadith_tree_data(self, hadith_id):
         """
-        Query the hadith and isnad from the database and format it into a JSON structure
-        for Cytoscape.js visualization, including geography and position information.
+        Query the hadith and isnad from the database and format it into a Cytoscape.js compatible JSON structure.
         """
         hadith_data = self.db.get_hadith_with_isnad(hadith_id)
 
@@ -18,7 +17,6 @@ class HadithTree:
 
         # Extract matn and comment from the first row
         matn = hadith_data[0][0]
-        comment = hadith_data[0][1] if hadith_data[0][1] else ""
 
         # Extract the isnad chain (narrators' names, locations, and positions)
         isnad = []
@@ -34,62 +32,55 @@ class HadithTree:
 
     def build_hadith_tree(self, isnad, matn):
         """
-        Build the hierarchical tree, starting from the child to the root.
-        Narrators at the same level should share the same children, and the matn should be placed only once at the last child.
+        Build a hierarchical tree compatible with Cytoscape.js.
+        Each node represents a narrator, and edges represent the isnad chain.
         """
-        # Group narrators by their position in the chain
-        isnad_by_position = {}
-        for narrator in isnad:
-            position = narrator["position_in_chain"]
-            if position not in isnad_by_position:
-                isnad_by_position[position] = []
-            isnad_by_position[position].append(narrator)
+        # Define the root node (Prophet)
+        nodes = []
+        edges = []
 
-        # Start with the lowest position (child) where the matn is located
-        last_position = min(isnad_by_position.keys())
-        last_narrators = isnad_by_position[last_position]
-
-        # Create the initial node where matn will be stored
-        tree_data = {
-            "name": last_narrators[0]["name"],
-            "geography": last_narrators[0]["geography"],
-            "position_in_chain": last_narrators[0]["position_in_chain"],
-            "matn": matn,  # Add the matn to the lowest position (child)
-            "children": []
-        }
-
-        # Shared last node for multiple narrators at the lowest position
-        if len(last_narrators) > 1:
-            last_node = {
-                "name": None,
-                "children": [{"name": n["name"], "geography": n["geography"], "position_in_chain": n["position_in_chain"]} for n in last_narrators]
+        # Create nodes for each narrator
+        for idx, narrator in enumerate(isnad):
+            node = {
+                "data": {
+                    "id": f"n{idx}",
+                    "label": narrator["name"],
+                    "geography": narrator["geography"]
+                }
             }
-        else:
-            last_node = tree_data
+            nodes.append(node)
 
-        # Traverse upwards from the lowest position to the root
-        for position in sorted(isnad_by_position.keys())[1:]:
-            narrators_at_position = isnad_by_position[position]
-            new_nodes = []
-            for narrator in narrators_at_position:
-                new_node = {
-                    "name": narrator["name"],
-                    "geography": narrator["geography"],
-                    "position_in_chain": narrator["position_in_chain"],
-                    "children": [last_node]  # Shared children for narrators at the same level
+            # Add edge to the previous narrator (linking them)
+            if idx > 0:
+                edges.append({
+                    "data": {
+                        "source": f"n{idx - 1}",
+                        "target": f"n{idx}"
+                    }
+                })
+
+        # Add a node for the matn (at the end of the isnad)
+        matn_node = {
+            "data": {
+                "id": "matn",
+                "label": matn,
+                "isMatn": True
+            }
+        }
+        nodes.append(matn_node)
+
+        # Connect the last narrator to the matn node
+        if nodes:
+            last_narrator_id = nodes[-2]["data"]["id"]
+            edges.append({
+                "data": {
+                    "source": last_narrator_id,
+                    "target": "matn"
                 }
-                new_nodes.append(new_node)
+            })
 
-            # Handle shared children for narrators at the same level
-            if len(new_nodes) > 1:
-                last_node = {
-                    "name": None,
-                    "children": new_nodes
-                }
-            else:
-                last_node = new_nodes[0]  # Move up to the next position
-
-        return last_node  # Return the final tree structure
+        # Return the combined nodes and edges for Cytoscape.js
+        return nodes + edges
 
     def generate_tree_html(self, hadith_id, geography_colors):
         """
@@ -126,4 +117,3 @@ if __name__ == "__main__":
 
     # Close the database connection
     hadith_tree.close()
-
