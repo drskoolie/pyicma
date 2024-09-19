@@ -34,6 +34,20 @@ class Hadith():
         tashkeel_regex = re.compile(r'[\u0610-\u061A\u064B-\u065F\u0670]')
         return tashkeel_regex.sub('', text)
 
+    def remove_honorifics(self, text):
+     # Define patterns for the phrases
+        patterns = [
+            r" رضي الله عنه",  # Radya allahu anhu
+            r" صلى الله عليه وسلم",  # Salat allah alayhi wasalam
+        ]
+        
+        # Iterate over the patterns and remove each one from the text
+        for pattern in patterns:
+            text = re.sub(pattern, '', text)
+        
+        # Return the cleaned text
+        return text
+
     def extract_isnads_and_matn(self, raw_text):
         # Split the text by the new line separating the isnad and matn
         parts = raw_text.strip().split("\n\n")
@@ -82,6 +96,8 @@ class Hadith():
         processed_narrators = self.process_narrators(narrators)
 
         processed_narrators = [self.remove_tashkeel(narrator) for narrator in processed_narrators]
+
+        processed_narrators = [self.remove_honorifics(narrator) for narrator in processed_narrators]
 
         return processed_narrators
 
