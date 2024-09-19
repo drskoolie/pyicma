@@ -27,7 +27,8 @@ class HadithDatabase:
                 name TEXT NOT NULL,
                 location TEXT,
                 death_date DATE,
-                link TEXT
+                link TEXT,
+                truncated_names TEXT
             )
         ''')
 
@@ -93,11 +94,13 @@ class HadithDatabase:
         with open(file_path, newline='', encoding='utf-8') as csvfile:
             reader = csv.DictReader(csvfile)
             for row in reader:
+                truncated_names = row['truncated_names'].split(',') if row['truncated_names'] else []
                 self.add_narrator(
                     name=row['name'], 
                     location=row['location'], 
                     death_date=row['death_date'], 
-                    link=row['link']
+                    link=row['link'],
+                    truncated_names=truncated_names  # Pass truncated names as a list
                 )
 
         self.store_new_hash(new_hash)
@@ -129,31 +132,52 @@ class HadithDatabase:
 
         hadith_id = self.cursor.lastrowid  # Return the new hadith's ID
 
-        self.link_narrators_in_isnad(hadith_id, hadith.narrators)
+        self.link_narrators_in_isnad(hadith_id, hadith)
 
         return hadith_id
 
-    def add_narrator(self, name, location=None, death_date=None, link=None):
-        # Insert a new narrator into the Narrators table
+    def add_narrator(self, name, location=None, death_date=None, link=None, truncated_names=None):
+        # Join truncated names into a comma-separated string
+        truncated_names_str = ','.join(truncated_names) if truncated_names else None
+
+        # Insert a new narrator into the Narrators table, including multiple truncated names
         self.cursor.execute('''
-            INSERT INTO Narrators (name, location, death_date, link)
-            VALUES (?, ?, ?, ?)
-        ''', (name, location, death_date, link))
+            INSERT INTO Narrators (name, location, death_date, link, truncated_names)
+            VALUES (?, ?, ?, ?, ?)
+        ''', (name, location, death_date, link, truncated_names_str))
         self.conn.commit()
         return self.cursor.lastrowid  # Return the new narrator's ID
 
-    def link_narrators_in_isnad(self, hadith_id, narrators):
-        # Link narrators in an isnad chain for a given hadith using only their names
+    def link_narrators_in_isnad(self, hadith_id, hadith):
         prev_narrator_id = None
 
-        for position, narrator_name in enumerate(narrators):
-            # Find the narrator by name in the database
-            self.cursor.execute('SELECT id FROM Narrators WHERE name = ?', (narrator_name,))
+        for position, narrator_name in enumerate(hadith.narrators):
+            # First, try to find the narrator by full name
+            self.cursor.execute('SELECT id, truncated_names FROM Narrators WHERE name = ?', (narrator_name,))
             result = self.cursor.fetchone()
 
+            # If not found by full name, check against truncated names
             if not result:
-                print(f"Error: Narrator '{narrator_name}' not found in the database.")
-                return  # Stop if any narrator is missing
+                # Fetch all narrators and check truncated names in Python
+                self.cursor.execute('SELECT id, name, truncated_names FROM Narrators')
+                all_narrators = self.cursor.fetchall()
+
+                found = False
+                for narrator in all_narrators:
+                    truncated_names = narrator[2]
+                    if truncated_names:
+                        # Split truncated_names and check if the current narrator_name matches
+                        truncated_list = truncated_names.split(',')
+                        if narrator_name in truncated_list:
+                            result = narrator
+                            found = True
+                            break
+
+                if not found:
+                    print(f"Error: Narrator '{narrator_name}' not found in the database.\n\n------")
+                    hadith.print_hadith()
+                    print("-----")
+                    return  # Stop if any narrator is missing
 
             narrator_id = result[0]
 
@@ -174,6 +198,7 @@ class HadithDatabase:
             prev_narrator_id = narrator_id
 
         self.conn.commit()
+
 
     def get_hadith_with_isnad(self, hadith_id):
         # Retrieve the hadith with its isnad chain
@@ -212,7 +237,6 @@ if __name__ == "__main__":
     """
 
     my_hadith = Hadith(hadith_text)
-    my_hadith.print_hadith()
 
     db = HadithDatabase()
 
