@@ -77,7 +77,21 @@ class Hadith():
             if narrator:
                 narrators.append(narrator)
         
-        return narrators
+        processed_narrators = self.process_narrators(narrators)
+
+        return processed_narrators
+
+    def process_narrators(self, narrators):
+        processed_narrators = []
+        for narrator in narrators:
+            if "#" in narrator:
+                # Split on hash and use the part after the hash as the actual narrator name
+                actual_narrator_name = narrator.split("# ")[1].strip()
+                processed_narrators.append(actual_narrator_name)
+            else:
+                # If no hash, use the full name
+                processed_narrators.append(narrator)
+        return processed_narrators
 
     def build_isnad_tree(narrators):
         narrators.reverse()
@@ -113,7 +127,7 @@ class Hadith():
 if __name__ == "__main__":
     # Example hadith text
     hadith_text = """
-    حَدَّثَنَا يُونُسُ قَالَ
+    حَدَّثَنَا يُونُسُ قَالَ # يونس بن حبيب
     حَدَّثَنَا أَبُو دَاوُدَ
     قَالَ حَدَّثَنَا شُعْبَةُ
     عَنْ قَتَادَةَ
