@@ -79,7 +79,7 @@ def generate_html(tree_data_json, geography_colors):
             }},
             'border-width': 2,
             'shape': 'rectangle',
-            'width': '120px',
+            'width': '150px',
             'height': '40px',
             'font-family': 'Arial, sans-serif',  // Ensure text looks good for Arabic
             'font-size': '14px',
@@ -93,16 +93,20 @@ def generate_html(tree_data_json, geography_colors):
             'label': 'data(label)',
             'background-color': '#f0f0f0',  // Light gray background for matn
             'border-color': '#ddd',
-            'border-width': 1,
+            'border-width': 2,
             'shape': 'rectangle',
-            'width': '120px',  // Match width to parent node
+            'width': '150px',  // Match width to parent node
             'height': 'auto',  // Auto height for multiline text
             'font-family': 'Arial, sans-serif',
             'font-size': '14px',
             'direction': 'rtl',  // Right-to-left for Arabic text
+            'text-halign': 'center',  // Ensure text is aligned to the right within the box
+            'text-valign': 'center',  // Vertical alignment (adjust if you need something else)
             'text-wrap': 'wrap',  // Enable text wrapping
-            'text-max-width': '120px'  // Match node width
+            'text-max-width': '150px',  // Match node width
+            'padding': '5px'  // Padding for better readability
           }}
+
         }},
         {{
           selector: 'edge',
