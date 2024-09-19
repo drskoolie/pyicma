@@ -49,7 +49,7 @@
 
     const cy = cytoscape({
       container: document.getElementById('cy'),  // container to render in
-      elements: [{"data": {"id": "n0", "label": "أحمد بن حنبل", "geography": "Baghdad"}}, {"data": {"id": "n1", "label": "سليمان بن داود", "geography": "Baghdad"}}, {"data": {"id": "n2", "label": "عبد الصمد بن عبد الوارث", "geography": "Basra"}}, {"data": {"id": "n3", "label": "شعبة ابن الحجاج بن الورد", "geography": "Basra"}}, {"data": {"id": "n4", "label": "همام بن يحيى", "geography": "Basra"}}, {"data": {"id": "n5", "label": "قتادة بن دعامة", "geography": "Basra"}}, {"data": {"id": "n6", "label": "زرارة بن أوفى العامري", "geography": "Basra"}}, {"data": {"id": "n7", "label": "أبو هريرة", "geography": "Madinah"}}, {"data": {"id": "n8", "label": "عبد الصمد بن عبد الوارث", "geography": "Basra"}}, {"data": {"id": "n9", "label": "رسول الله", "geography": "Madinah"}}, {"data": {"id": "matn", "label": "إذا باتت المرأة هاجرة لفراش زوجها\nلعنتها الملائكة\nحتى تصبح  )أو: حتى ترجع(", "isMatn": true}}, {"data": {"source": "n1", "target": "n0"}}, {"data": {"source": "n2", "target": "n0"}}, {"data": {"source": "n3", "target": "n1"}}, {"data": {"source": "n3", "target": "n2"}}, {"data": {"source": "n4", "target": "n1"}}, {"data": {"source": "n4", "target": "n2"}}, {"data": {"source": "n5", "target": "n3"}}, {"data": {"source": "n5", "target": "n4"}}, {"data": {"source": "n6", "target": "n5"}}, {"data": {"source": "n7", "target": "n6"}}, {"data": {"source": "n8", "target": "n7"}}, {"data": {"source": "n9", "target": "n8"}}, {"data": {"source": "matn", "target": "n0"}}],
+      elements: [{"data": {"id": "n0", "label": "أحمد بن حنبل", "geography": "Baghdad"}}, {"data": {"id": "n1", "label": "سليمان بن داود", "geography": "Baghdad"}}, {"data": {"id": "n2", "label": "عبد الصمد بن عبد الوارث", "geography": "Basra"}}, {"data": {"id": "n3", "label": "شعبة ابن الحجاج بن الورد", "geography": "Basra"}}, {"data": {"id": "n4", "label": "همام بن يحيى", "geography": "Basra"}}, {"data": {"id": "n5", "label": "قتادة بن دعامة", "geography": "Basra"}}, {"data": {"id": "n6", "label": "زرارة بن أوفى العامري", "geography": "Basra"}}, {"data": {"id": "n7", "label": "أبو هريرة", "geography": "Madinah"}}, {"data": {"id": "n8", "label": "عبد الصمد بن عبد الوارث", "geography": "Basra"}}, {"data": {"id": "n9", "label": "رسول الله", "geography": "Madinah"}}, {"data": {"id": "matn", "label": "إذا باتت المرأة هاجرة لفراش زوجها\nلعنتها الملائكة\nحتى تصبح  )أو: حتى ترجع(", "isMatn": true}}, {"data": {"source": "n1", "target": "n0"}}, {"data": {"source": "n2", "target": "n0"}}, {"data": {"source": "n3", "target": "n1"}}, {"data": {"source": "n3", "target": "n2"}}, {"data": {"source": "n4", "target": "n1"}}, {"data": {"source": "n4", "target": "n2"}}, {"data": {"source": "n5", "target": "n3"}}, {"data": {"source": "n5", "target": "n4"}}, {"data": {"source": "n6", "target": "n5"}}, {"data": {"source": "n7", "target": "n6"}}, {"data": {"source": "n8", "target": "n7"}}, {"data": {"source": "n9", "target": "n8"}}, {"data": {"source": "n0", "target": "matn"}}],
 
       layout: {
         name: 'dagre',  // Hierarchical layout (Dagre)
@@ -129,7 +129,7 @@
     cy.layout({
       name: 'dagre',
       rankDir: 'TB',
-      nodeSep: 50,
+      nodeSep: 30,
       edgeSep: 10,
       rankSep: 100
     }).run();

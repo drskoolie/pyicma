@@ -135,7 +135,7 @@ def generate_html(tree_data_json, geography_colors):
     cy.layout({{
       name: 'dagre',
       rankDir: 'TB',
-      nodeSep: 50,
+      nodeSep: 30,
       edgeSep: 10,
       rankSep: 100
     }}).run();

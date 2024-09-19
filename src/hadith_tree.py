@@ -96,8 +96,8 @@ class HadithTree:
         for narrator in isnad_by_position[last_position]:
             edges.append({
                 "data": {
-                    "source": "matn",
-                    "target": narrator["id"]
+                    "source": narrator["id"],
+                    "target": "matn"
                 }
             })
 
