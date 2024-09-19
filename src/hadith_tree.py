@@ -6,6 +6,108 @@ class HadithTree:
     def __init__(self, db_name='data/hadith.db'):
         self.db = HadithDatabase(db_name)
 
+    def fetch_all_hadiths(self):
+        """
+        Fetch all hadiths from the database along with their isnads and matn.
+        This will return a list of isnad chains and a list of corresponding matn.
+        """
+        hadiths = self.db.get_all_hadiths_with_isnad()  # Assuming a function that fetches all hadiths with isnad
+        hadith_list = []
+        matn_list = []
+
+        for hadith_data in hadiths:
+            isnad_chain = hadith_data["isnad"]  # Extract isnad
+            matn = hadith_data["matn"]  # Extract matn
+            hadith_list.append(isnad_chain)
+            matn_list.append(matn)
+
+        return hadith_list, matn_list
+
+    def build_hadith_tree_for_multiple_hadiths(self, hadith_list, matn_list):
+        """
+        Build a hierarchical tree for multiple hadiths, ensuring shared narrators
+        (except for the last child node) do not create duplicate nodes.
+        """
+        nodes = []
+        edges = []
+        seen_narrators = {}  # To track narrators that have already been added (except last child)
+
+        for hadith_id, isnad in enumerate(hadith_list):
+            matn = matn_list[hadith_id]
+
+            # Sort isnad by position_in_chain in ascending order
+            isnad_sorted = sorted(isnad, key=lambda x: x["position_in_chain"], reverse=True)  # Reverse order to treat position 0 as the child
+
+            last_narrator = None  # Track the last narrator to connect it to the matn
+            for idx, narrator in enumerate(isnad_sorted):
+                narrator_name = narrator["name"]
+                narrator_position = narrator["position_in_chain"]
+
+                # Only the last child node should be duplicated
+                if narrator_name not in seen_narrators or narrator_position == 0:  # Allow duplication only for the last child node
+                    node_id = f"n{narrator_name}_{narrator_position}_{hadith_id}" if narrator_position == 0 else f"n{narrator_name}"
+                    
+                    node = {
+                        "data": {
+                            "id": node_id,
+                            "label": narrator_name,
+                            "geography": narrator["geography"]
+                        }
+                    }
+                    nodes.append(node)
+                    
+                    # Only add the narrator to seen_narrators if it's not the last child node
+                    if narrator_position != 0:  # Do not track the last child node to allow multiple instances
+                        seen_narrators[narrator_name] = node_id
+                else:
+                    node_id = seen_narrators[narrator_name]
+
+                # Add edge from the previous node to the current node
+                if last_narrator:
+                    edges.append({
+                        "data": {
+                            "source": last_narrator,
+                            "target": node_id
+                        }
+                    })
+
+                # Update the last narrator
+                last_narrator = node_id
+
+            # Add the matn node
+            matn_node_id = f"matn_{hadith_id}"
+            matn_node = {
+                "data": {
+                    "id": matn_node_id,
+                    "label": matn,
+                    "isMatn": True
+                }
+            }
+            nodes.append(matn_node)
+
+            # Connect the matn to the last child narrator
+            edges.append({
+                "data": {
+                    "source": last_narrator,  # Last child node is the source
+                    "target": matn_node_id  # Matn is the target
+                }
+            })
+
+        return nodes + edges
+
+    def generate_tree_from_database(self, geography_colors):
+        """
+        Fetch all hadiths from the database, build the hierarchical tree, and generate the HTML file.
+        """
+        # Fetch all hadiths and isnads from the database
+        hadith_list, matn_list = self.fetch_all_hadiths()
+
+        # Build the tree with all the hadiths
+        tree_data = self.build_hadith_tree_for_multiple_hadiths(hadith_list, matn_list)
+
+        # Pass the tree data to the generate_html function
+        generate_html(json.dumps(tree_data, ensure_ascii=False), geography_colors)
+
     def fetch_hadith_tree_data(self, hadith_id):
         """
         Query the hadith and isnad from the database and format it into a Cytoscape.js compatible JSON structure.
@@ -135,7 +237,8 @@ if __name__ == "__main__":
     }
 
     # Generate tree visualization for a hadith with id 1
-    hadith_tree.generate_tree_html(1, geography_colors)
+    # hadith_tree.generate_tree_html(1, geography_colors)
+    hadith_tree.generate_tree_from_database(geography_colors)
 
     # Close the database connection
     hadith_tree.close()

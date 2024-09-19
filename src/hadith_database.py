@@ -225,6 +225,45 @@ class HadithDatabase:
         
         return self.cursor.fetchall()
 
+    def get_all_hadiths_with_isnad(self):
+        """
+        Fetch all hadiths along with their isnad chain and matn.
+        Returns a list of hadiths, each with its isnad chain and matn.
+        """
+        # Query to fetch hadiths and their isnads
+        query = """
+        SELECT h.id, h.matn, n.name, n.location, i.position_in_chain
+        FROM Hadiths h
+        JOIN Isnads i ON h.id = i.hadith_id
+        JOIN Narrators n ON i.narrator_id = n.id
+        ORDER BY h.id, i.position_in_chain
+        """
+        self.cursor.execute(query)
+        rows = self.cursor.fetchall()
+
+        # Organize the data by hadith
+        hadith_dict = {}
+        for row in rows:
+            hadith_id = row[0]
+            matn = row[1]
+            narrator = {
+                "name": row[2],
+                "geography": row[3],
+                "position_in_chain": row[4]
+            }
+
+            if hadith_id not in hadith_dict:
+                hadith_dict[hadith_id] = {"matn": matn, "isnad": []}
+            
+            hadith_dict[hadith_id]["isnad"].append(narrator)
+
+        # Convert to a list format
+        hadith_list = []
+        for hadith in hadith_dict.values():
+            hadith_list.append(hadith)
+
+        return hadith_list
+
     def close(self):
         # Close the connection when done
         self.conn.close()
