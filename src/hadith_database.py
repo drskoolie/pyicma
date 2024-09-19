@@ -168,7 +168,7 @@ class HadithDatabase:
                     truncated_names = narrator[2]
                     if truncated_names:
                         # Split truncated_names and check if the current narrator_name matches
-                        truncated_list = truncated_names.split(',')
+                        truncated_list = truncated_names.split('|')
                         if narrator_name in truncated_list:
                             result = narrator
                             found = True
@@ -223,6 +223,7 @@ if __name__ == "__main__":
     # Example hadith text
     hadith_text = """
     حَدَّثَنَا يُونُسُ قَالَ # يونس بن حبيب
+    عَنْ أَبِي حَازِمٍ
     حَدَّثَنَا أَبُو دَاوُدَ
     قَالَ حَدَّثَنَا شُعْبَةُ
     عَنْ قَتَادَةَ

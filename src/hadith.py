@@ -1,5 +1,5 @@
 import re
-from anytree import Node, RenderTree
+from anytree import Node
 
 import arabic_reshaper
 from bidi.algorithm import get_display
@@ -26,6 +26,8 @@ class Hadith():
 
         self.isnads, self.matn, self.comment = self.extract_isnads_and_matn(self.raw_text)
         self.narrators = self.extract_narrators(self.isnads)
+        self.matn = self.remove_tashkeel(self.matn)
+        self.comment = self.remove_tashkeel(self.comment)
 
     def remove_tashkeel(self, text):
         # Unicode ranges for tashkeel (Arabic diacritics)
