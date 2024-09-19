@@ -26,40 +26,62 @@ class HadithTree:
             position = row[4]  # Position in the isnad chain
             isnad.append({"name": narrator_name, "geography": geography, "position_in_chain": position})
 
-        # Build a hierarchical structure where the Prophet is the root
+        # Build a hierarchical structure where the root is the last narrator
         tree_data = self.build_hadith_tree(isnad, matn)
         return tree_data
 
     def build_hadith_tree(self, isnad, matn):
         """
-        Build a hierarchical tree compatible with Cytoscape.js.
+        Build a hierarchical tree compatible with Cytoscape.js, starting with the child node (position = 0).
         Each node represents a narrator, and edges represent the isnad chain.
         """
-        # Define the root node (Prophet)
         nodes = []
         edges = []
 
-        # Create nodes for each narrator
-        for idx, narrator in enumerate(isnad):
-            node = {
-                "data": {
-                    "id": f"n{idx}",
-                    "label": narrator["name"],
-                    "geography": narrator["geography"]
-                }
-            }
-            nodes.append(node)
+        # Sort isnad by position_in_chain in ascending order
+        isnad_sorted = sorted(isnad, key=lambda x: x["position_in_chain"])
 
-            # Add edge to the previous narrator (linking them)
-            if idx > 0:
-                edges.append({
+        # Group narrators by their position in the isnad
+        isnad_by_position = {}
+        for idx, narrator in enumerate(isnad_sorted):
+            position = narrator['position_in_chain']
+            if position not in isnad_by_position:
+                isnad_by_position[position] = []
+            isnad_by_position[position].append({
+                "id": f"n{idx}",
+                "name": narrator["name"],
+                "geography": narrator["geography"]
+            })
+
+        # Create nodes for each narrator, starting from the child
+        for position, narrators in isnad_by_position.items():
+            for narrator in narrators:
+                node = {
                     "data": {
-                        "source": f"n{idx - 1}",
-                        "target": f"n{idx}"
+                        "id": narrator["id"],
+                        "label": narrator["name"],
+                        "geography": narrator["geography"]
                     }
-                })
+                }
+                nodes.append(node)
 
-        # Add a node for the matn (at the end of the isnad)
+        # Add edges between nodes at different levels
+        positions_sorted = sorted(isnad_by_position.keys())
+        for i in range(1, len(positions_sorted)):
+            current_position = positions_sorted[i]
+            previous_position = positions_sorted[i - 1]
+
+            # Connect all narrators at the current level to the previous level (parent node)
+            for current_narrator in isnad_by_position[current_position]:
+                for previous_narrator in isnad_by_position[previous_position]:
+                    edges.append({
+                        "data": {
+                            "source": current_narrator["id"],
+                            "target": previous_narrator["id"]
+                        }
+                    })
+
+        # Add a node for the matn (place it visually below the last child)
         matn_node = {
             "data": {
                 "id": "matn",
@@ -69,13 +91,13 @@ class HadithTree:
         }
         nodes.append(matn_node)
 
-        # Connect the last narrator to the matn node
-        if nodes:
-            last_narrator_id = nodes[-2]["data"]["id"]
+        # Connect the matn to the last position's narrators
+        last_position = positions_sorted[0]  # The child node(s) at the lowest position
+        for narrator in isnad_by_position[last_position]:
             edges.append({
                 "data": {
-                    "source": last_narrator_id,
-                    "target": "matn"
+                    "source": "matn",
+                    "target": narrator["id"]
                 }
             })
 
