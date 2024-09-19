@@ -88,5 +88,4 @@ dmypy.json
 migrations/
 
 # Ignore data storage or cache files
-data/
 cache/
