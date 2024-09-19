@@ -106,23 +106,27 @@ class Hadith():
 
         return root
 
-    def print(self):
-        print("-----")
+    def __str__(self):
+        # Build the string representation of the Hadith
+        hadith_str = "-----\n"
         if self.file_path:
-            print(f"File Path:\n{self.file_path}\n")
+            hadith_str += f"File Path:\n{self.file_path}\n\n"
 
-        print("Narrators:")
+        hadith_str += "Narrators:\n"
         for narrator in self.narrators:
-            print(fix_arabic_text(narrator))
+            hadith_str += f"{fix_arabic_text(narrator)}\n"
 
-        print("\nMatn:")
-        print(fix_arabic_text(self.matn))
+        hadith_str += "\nMatn:\n"
+        hadith_str += f"{fix_arabic_text(self.matn)}\n"
 
         if self.comment:
-            print("\nComment:")
-            print(fix_arabic_text(self.comment))
+            hadith_str += "\nComment:\n"
+            hadith_str += f"{fix_arabic_text(self.comment)}\n"
 
-        print("-----")
+        hadith_str += "-----\n"
+        return hadith_str
+
+
 
 if __name__ == "__main__":
     # Example hadith text
@@ -142,4 +146,4 @@ if __name__ == "__main__":
     """
 
     hadith = Hadith(hadith_text, "Test")
-    hadith.print()
+    print(hadith)

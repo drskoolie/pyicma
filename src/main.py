@@ -2,6 +2,7 @@ import os
 import re
 
 from hadith import Hadith
+from hadith_database import HadithDatabase
 
 def load_hadith_from_file(file_path):
     with open(file_path, 'r', encoding='utf-8') as file:
@@ -24,6 +25,10 @@ def generate_hadiths():
 if __name__ == "__main__":
     # Directory containing the hadith text files
     hadiths = generate_hadiths()
+    db = HadithDatabase()
+
+    # Read narrators from the CSV file
+    db.read_narrators_from_csv()
     for hadith in hadiths:
-        hadith.print()
+        db.insert_hadith(hadith)
 
