@@ -1,5 +1,4 @@
 import re
-from anytree import Node
 
 import arabic_reshaper
 from bidi.algorithm import get_display
@@ -123,19 +122,6 @@ class Hadith():
         else:
             return text  # If no " و " with spaces, return the text as a single narrator
 
-
-    def build_isnad_tree(narrators):
-        narrators.reverse()
-
-        # The first narrator will be the root of the tree
-        root = Node(narrators[0])
-        current_node = root
-
-        # Loop through the remaining narrators and build the chain
-        for narrator in narrators[1:]:
-            current_node = Node(narrator, parent=current_node)
-
-        return root
 
     def __str__(self):
         # Build the string representation of the Hadith
