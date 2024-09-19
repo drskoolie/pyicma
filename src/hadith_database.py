@@ -17,7 +17,8 @@ class HadithDatabase:
             CREATE TABLE IF NOT EXISTS Hadiths (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 matn TEXT NOT NULL,
-                comments TEXT
+                comments TEXT,
+                file_path TEXT
             )
         ''')
 
@@ -125,9 +126,9 @@ class HadithDatabase:
     def insert_hadith(self, hadith: Hadith):
         # Insert a new hadith into the Hadiths table
         self.cursor.execute('''
-            INSERT INTO Hadiths (matn, comments)
-            VALUES (?, ?)
-        ''', (hadith.matn, hadith.comment))
+            INSERT INTO Hadiths (matn, comments, file_path)
+            VALUES (?, ?, ?)
+        ''', (hadith.matn, hadith.comment, hadith.file_path))
         self.conn.commit()
 
         hadith_id = self.cursor.lastrowid  # Return the new hadith's ID

@@ -11,20 +11,21 @@ def fix_arabic_text(text):
     return bidi_text
 
 class Hadith():
-    def __init__(self, raw_text):
+    def __init__(self, raw_text, file_path=""):
+        self.raw_text = raw_text
+        self.file_path = file_path
+
         self.introductory_words = [
             'حَدَّثَنَا', 'أَخْبَرَنَا', 'سَمِعْتُ', 'ذَكَرَ', 'رَوَى', 
             'قَالَ', 'قَالَ:','عَنْ', 'عَنِ', 'أَنْبَأَنَا', 'يُقَالُ', 'زَعَمَ',
             'أُرِيْنَا', 'يُرْوَى', 'حَدَّثَنِي', 'بَلَغَنَا', 'ثُمَّ',
             'يُحَدِّثُ', 'في', 'حديثه', 'نا', 'قالا:',
         ]
-
         self.introductory_words = [self.remove_tashkeel(word) for word in self.introductory_words]
 
-        self.raw_text = raw_text
+
         self.isnads, self.matn, self.comment = self.extract_isnads_and_matn(self.raw_text)
         self.narrators = self.extract_narrators(self.isnads)
-
 
     def remove_tashkeel(self, text):
         # Unicode ranges for tashkeel (Arabic diacritics)
