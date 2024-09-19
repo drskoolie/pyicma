@@ -122,7 +122,6 @@ class Hadith():
         else:
             return text  # If no " و " with spaces, return the text as a single narrator
 
-
     def __str__(self):
         # Build the string representation of the Hadith
         hadith_str = "-----\n"
@@ -167,4 +166,6 @@ if __name__ == "__main__":
     """
 
     hadith = Hadith(hadith_text, "Test")
+    print(hadith.to_tree_data())
+    hadith.to_tree_data()
     print(hadith)
