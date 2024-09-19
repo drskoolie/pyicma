@@ -79,6 +79,8 @@ class Hadith():
         
         processed_narrators = self.process_narrators(narrators)
 
+        processed_narrators = [self.remove_tashkeel(narrator) for narrator in processed_narrators]
+
         return processed_narrators
 
     def process_narrators(self, narrators):
