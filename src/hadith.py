@@ -166,6 +166,4 @@ if __name__ == "__main__":
     """
 
     hadith = Hadith(hadith_text, "Test")
-    print(hadith.to_tree_data())
-    hadith.to_tree_data()
     print(hadith)
