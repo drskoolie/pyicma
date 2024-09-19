@@ -193,11 +193,11 @@ class HadithDatabase:
             if isinstance(narrator_names, list):
                 for narrator_name in narrator_names:
                     narrator_id = self.check_narrator_in_db(hadith, narrator_name)
-                    self.insert_narrators_into_isnad(hadith_id, narrator_id, position, prev_narrator_id)
                     if not narrator_id:
                         print(f"\n-------\nError: Narrator '{narrator_name}' not found in the database.")
                         print(hadith)
                         return  # Stop if any narrator is missing
+                    self.insert_narrators_into_isnad(hadith_id, narrator_id, position, prev_narrator_id)
             else:
                 narrator_name = narrator_names
                 narrator_id = self.check_narrator_in_db(hadith, narrator_name)
