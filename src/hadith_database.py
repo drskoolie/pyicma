@@ -110,14 +110,6 @@ class HadithDatabase:
     # --------
     # Narrator
     # --------
-    def check_narrator_in_db(self, name):
-        # Check if the narrator exists in the database by name
-        query = "SELECT id FROM Narrators WHERE name = ?"
-        self.cursor.execute(query, (name,))
-        result = self.cursor.fetchone()
-        
-        return result is not None  # Return True if found, False otherwise
-
     def truncate_narrators(self):
         # Remove all records from the Narrators table
         self.cursor.execute('DELETE FROM Narrators')
@@ -149,51 +141,71 @@ class HadithDatabase:
         self.conn.commit()
         return self.cursor.lastrowid  # Return the new narrator's ID
 
+    def check_narrator_in_db(self, hadith, narrator_name):
+        # First, try to find the narrator by full name
+        self.cursor.execute('SELECT id, truncated_names FROM Narrators WHERE name = ?', (narrator_name,))
+        result = self.cursor.fetchone()
+
+        # If not found by full name, check against truncated names
+        if not result:
+            # Fetch all narrators and check truncated names in Python
+            self.cursor.execute('SELECT id, name, truncated_names FROM Narrators')
+            all_narrators = self.cursor.fetchall()
+
+            found = False
+            for narrator in all_narrators:
+                truncated_names = narrator[2]
+                if truncated_names:
+                    # Split truncated_names and check if the current narrator_name matches
+                    truncated_list = truncated_names.split('|')
+                    if narrator_name in truncated_list:
+                        result = narrator
+                        found = True
+                        break
+
+            if not found:
+                print(f"\n-------\nError: Narrator '{narrator_name}' not found in the database.")
+                print(hadith)
+                return  # Stop if any narrator is missing
+
+        # Narrator ID
+        return result[0]
+
+    def insert_narrators_into_isnad(self, hadith_id, narrator_id, position, prev_narrator_id):
+        # Insert into Isnads table, linking narrators in the isnad chain
+        self.cursor.execute('''
+            INSERT INTO Isnads (hadith_id, narrator_id, next_narrator_id, position_in_chain)
+            VALUES (?, ?, ?, ?)
+        ''', (hadith_id, narrator_id, None, position))
+
+        # If there's a previous narrator, update the next_narrator_id of the previous one
+        if prev_narrator_id is not None:
+            self.cursor.execute('''
+                UPDATE Isnads
+                SET next_narrator_id = ?
+                WHERE hadith_id = ? AND narrator_id = ?
+            ''', (narrator_id, hadith_id, prev_narrator_id))
+
     def link_narrators_in_isnad(self, hadith_id, hadith):
         prev_narrator_id = None
 
-        for position, narrator_name in enumerate(hadith.narrators):
-            # First, try to find the narrator by full name
-            self.cursor.execute('SELECT id, truncated_names FROM Narrators WHERE name = ?', (narrator_name,))
-            result = self.cursor.fetchone()
-
-            # If not found by full name, check against truncated names
-            if not result:
-                # Fetch all narrators and check truncated names in Python
-                self.cursor.execute('SELECT id, name, truncated_names FROM Narrators')
-                all_narrators = self.cursor.fetchall()
-
-                found = False
-                for narrator in all_narrators:
-                    truncated_names = narrator[2]
-                    if truncated_names:
-                        # Split truncated_names and check if the current narrator_name matches
-                        truncated_list = truncated_names.split('|')
-                        if narrator_name in truncated_list:
-                            result = narrator
-                            found = True
-                            break
-
-                if not found:
+        for position, narrator_names in enumerate(hadith.narrators):
+            if isinstance(narrator_names, list):
+                for narrator_name in narrator_names:
+                    narrator_id = self.check_narrator_in_db(hadith, narrator_name)
+                    self.insert_narrators_into_isnad(hadith_id, narrator_id, position, prev_narrator_id)
+                    if not narrator_id:
+                        print(f"\n-------\nError: Narrator '{narrator_name}' not found in the database.")
+                        print(hadith)
+                        return  # Stop if any narrator is missing
+            else:
+                narrator_name = narrator_names
+                narrator_id = self.check_narrator_in_db(hadith, narrator_name)
+                if not narrator_id:
                     print(f"\n-------\nError: Narrator '{narrator_name}' not found in the database.")
                     print(hadith)
                     return  # Stop if any narrator is missing
-
-            narrator_id = result[0]
-
-            # Insert into Isnads table, linking narrators in the isnad chain
-            self.cursor.execute('''
-                INSERT INTO Isnads (hadith_id, narrator_id, next_narrator_id, position_in_chain)
-                VALUES (?, ?, ?, ?)
-            ''', (hadith_id, narrator_id, None, position))
-
-            # If there's a previous narrator, update the next_narrator_id of the previous one
-            if prev_narrator_id is not None:
-                self.cursor.execute('''
-                    UPDATE Isnads
-                    SET next_narrator_id = ?
-                    WHERE hadith_id = ? AND narrator_id = ?
-                ''', (narrator_id, hadith_id, prev_narrator_id))
+                self.insert_narrators_into_isnad(hadith_id, narrator_id, position, prev_narrator_id)
 
             prev_narrator_id = narrator_id
 

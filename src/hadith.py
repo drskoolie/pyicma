@@ -94,10 +94,9 @@ class Hadith():
                 narrators.append(narrator)
         
         processed_narrators = self.process_narrators(narrators)
-
         processed_narrators = [self.remove_tashkeel(narrator) for narrator in processed_narrators]
-
         processed_narrators = [self.remove_honorifics(narrator) for narrator in processed_narrators]
+        processed_narrators = [self.split_narrators_at_wa(narrator) for narrator in processed_narrators]
 
         return processed_narrators
 
@@ -112,6 +111,16 @@ class Hadith():
                 # If no hash, use the full name
                 processed_narrators.append(narrator)
         return processed_narrators
+
+    def split_narrators_at_wa(self, text):
+        # Check for the pattern where "و" has a space before and after it
+        if " و " in text:
+            # Split the text into two narrators based on the " و "
+            narrators = text.split(" و ")
+            return [narrator.strip() for narrator in narrators]  # Return the two narrators as a list
+        else:
+            return text  # If no " و " with spaces, return the text as a single narrator
+
 
     def build_isnad_tree(narrators):
         narrators.reverse()
@@ -134,7 +143,11 @@ class Hadith():
 
         hadith_str += "Narrators:\n"
         for narrator in self.narrators:
-            hadith_str += f"{fix_arabic_text(narrator)}\n"
+            if isinstance(narrator, list):
+                my_str = " || ".join(narrator)
+                hadith_str += f"{fix_arabic_text(my_str)}\n"
+            else:
+                hadith_str += f"{fix_arabic_text(narrator)}\n"
 
         hadith_str += "\nMatn:\n"
         hadith_str += f"{fix_arabic_text(self.matn)}\n"
