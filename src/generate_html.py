@@ -96,7 +96,13 @@ def generate_html(tree_data_json, geography_colors):
             'border-width': 2,
             'shape': 'rectangle',
             'width': '150px',  // Match width to parent node
-            'height': 'auto',  // Auto height for multiline text
+            'height': function(ele) {{
+              const textLength = ele.data('label').length;
+              const estimatedLines = Math.ceil(textLength / 30);  // Estimate lines based on 30 chars per line
+              const baseHeight = 20;  // Base height for a single line
+              const buffer = 1.2;  // 20% buffer for additional space
+              return (baseHeight * estimatedLines * buffer) + 'px';  // Calculate dynamic height
+            }},
             'font-family': 'Arial, sans-serif',
             'font-size': '14px',
             'direction': 'rtl',  // Right-to-left for Arabic text
