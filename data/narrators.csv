@@ -1,5 +1,6 @@
 name,location,death_date,link,truncated_names
 أبو بكر بن أبي شيبة,Kufa,235,https://ar.wikipedia.org/wiki/%D8%A3%D8%A8%D9%88_%D8%A8%D9%83%D8%B1_%D8%A8%D9%86_%D8%A3%D8%A8%D9%8A_%D8%B4%D9%8A%D8%A8%D8%A9,ابن أبي شيبة|بن أبي شيبة
+ابو داود الطيالسي,Basra,204,https://www.islamweb.net/ar/library/content/60/1566/%D8%A7%D9%84%D8%B7%D9%8A%D8%A7%D9%84%D8%B3%D9%8A,أبو داود
 أبو حازم,Madinah,757,https://ar.wikipedia.org/wiki/%D8%B3%D9%84%D9%85%D8%A9_%D8%A8%D9%86_%D8%AF%D9%8A%D9%86%D8%A7%D8%B1,أبو حازم الأشجعي|أبي حازم|سلمة بن دينار|أبي حازم الأشجعي
 أبو عوانة الإسفراييني,Eastern,176,https://www.islamweb.net/ar/library/content/60/1328/%D8%A3%D8%A8%D9%88-%D8%B9%D9%88%D8%A7%D9%86%D8%A9,أبو عوانة
 أبو معاوية,Kufa,194,https://ar.wikipedia.org/wiki/%D8%A3%D8%A8%D9%88_%D9%85%D8%B9%D8%A7%D9%88%D9%8A%D8%A9_%D8%A7%D9%84%D8%B6%D8%B1%D9%8A%D8%B1,أبي معاوية|أبا معاوية
@@ -8,6 +9,8 @@ name,location,death_date,link,truncated_names
 اسحاق بن راهويه,Eastern,238,https://ar.wikipedia.org/wiki/%D8%A5%D8%B3%D8%AD%D8%A7%D9%82_%D8%A8%D9%86_%D8%B1%D8%A7%D9%87%D9%88%D9%8A%D9%87,
 البخاري,Eastern,870,https://en.wikipedia.org/wiki/Muhammad_al-Bukhari,
 الدارمي السمرقندي,Eastern,869,https://www.islamweb.net/ar/library/content/60/2206/%D8%A7%D9%84%D8%AF%D8%A7%D8%B1%D9%85%D9%8A,الدارمي
+بهز بن حكيم,Basra,150,https://www.islamweb.net/ar/library/content/60/1045/%D8%A8%D9%87%D8%B2-%D8%A8%D9%86-%D8%AD%D9%83%D9%8A%D9%85
+حجاج بن أرطاة,Basra,150,https://www.islamweb.net/ar/library/content/60/1129/%D8%AD%D8%AC%D8%A7%D8%AC-%D8%A8%D9%86-%D8%A3%D8%B1%D8%B7%D8%A7%D8%A9,
 رسول الله,Madinah,11,,النبي
 زرارة بن أوفى العامري,Basra,93,https://ar.wikipedia.org/wiki/زرارة_بن_أوفى,زرارة بن أوفى
 سليمان بن مهران الأعمش,Kufa,148,https://ar.wikipedia.org/wiki/%D8%B3%D9%84%D9%8A%D9%85%D8%A7%D9%86_%D8%A8%D9%86_%D9%85%D9%87%D8%B1%D8%A7%D9%86_%D8%A7%D9%84%D8%A3%D8%B9%D9%85%D8%B4,الأعمش
@@ -16,9 +19,8 @@ name,location,death_date,link,truncated_names
 عبد الله بن نمير,Basra,814,https://ar.wikipedia.org/wiki/%D8%B9%D8%A8%D8%AF_%D8%A7%D9%84%D9%84%D9%87_%D8%A8%D9%86_%D9%86%D9%85%D9%8A%D8%B1,ابن نمير
 عبدالله بن عباس,Madinah,687,https://en.wikipedia.org/wiki/Ibn_Abbas,ابن عباس
 قتادة بن دعامة,Basra,118,https://ar.wikipedia.org/wiki/%D9%82%D8%AA%D8%A7%D8%AF%D8%A9_%D8%A8%D9%86_%D8%AF%D8%B9%D8%A7%D9%85%D8%A9,قتادة
+محمد بن جعفر غندر,Basra,818,https://www.islamweb.net/ar/library/content/60/1475/%D8%BA%D9%86%D8%AF%D8%B1,محمد بن جعفر
 مسدد بن مسرهد,Basra,228,https://ar.wikipedia.org/wiki/%D9%85%D8%B3%D8%AF%D8%AF_%D8%A8%D9%86_%D9%85%D8%B3%D8%B1%D9%87%D8%AF,
 هاشم بن القاسم,Baghdad,207,https://www.islamweb.net/ar/library/content/1001/7827/هاشم-بن-القاسم-أبو-النضر-الليثي-البغدادي,
 وكيع بن الجراح,Kufa,169,https://ar.wikipedia.org/wiki/%D9%88%D9%83%D9%8A%D8%B9_%D8%A8%D9%86_%D8%A7%D9%84%D8%AC%D8%B1%D8%A7%D8%AD,وكيع
 يونس بن حبيب,Basra,267,https://www.islamweb.net/ar/library/content/60/2371/%D9%8A%D9%88%D9%86%D8%B3-%D8%A8%D9%86-%D8%AD%D8%A8%D9%8A%D8%A8,
-محمد بن جعفر غندر,Basra,818,https://www.islamweb.net/ar/library/content/60/1475/%D8%BA%D9%86%D8%AF%D8%B1,محمد بن جعفر
-حجاج بن أرطاة,Basra,150,https://www.islamweb.net/ar/library/content/60/1129/%D8%AD%D8%AC%D8%A7%D8%AC-%D8%A8%D9%86-%D8%A3%D8%B1%D8%B7%D8%A7%D8%A9,
