@@ -60,9 +60,9 @@ def generate_html(tree_data_json, geography_colors):
       layout: {{
         name: 'dagre',  // Hierarchical layout (Dagre)
         rankDir: 'TB',  // Top-to-bottom direction
-        nodeSep: 50,  // Space between nodes
+        nodeSep: 30,  // Space between nodes
         edgeSep: 10,  // Space between edges
-        rankSep: 100  // Space between levels
+        rankSep: 50  // Space between levels
       }},
 
       style: [
@@ -127,23 +127,53 @@ def generate_html(tree_data_json, geography_colors):
 
       userZoomingEnabled: true,  // Re-enable zooming
       userPanningEnabled: true,  // Re-enable panning
-      boxSelectionEnabled: false,  // Disable selection box
-      autounselectify: true  // Disable node selection
+      boxSelectionEnabled: true,  
+      autounselectify: true,
+      selectionType: 'additive'  // Allow adding more nodes to the selection
     }});
 
     // Apply the layout and lock the nodes in place
     cy.layout({{
       name: 'dagre',
       rankDir: 'TB',
-      nodeSep: 30,
+      nodeSep: 50,
       edgeSep: 10,
-      rankSep: 100
+      rankSep: 50
     }}).run();
+
+    // Enable dragging of multiple nodes
+    cy.on('select', 'node', function(evt) {{
+      let selectedNodes = cy.nodes(':selected');  // Get all selected nodes
+      selectedNodes.on('drag', function(){{
+        // You can apply custom actions here when the nodes are dragged
+        console.log('Dragging selected nodes...');
+      }});
+  }});
+
+    const gridSize = 50;  // Define the grid size for snapping
+
+    // Function to snap the node to the nearest grid position
+    function snapToGrid(node) {{
+      const pos = node.position();
+      const snappedPos = {{
+        x: Math.round(pos.x / gridSize) * gridSize,  // Snap x to nearest grid
+        y: Math.round(pos.y / gridSize) * gridSize   // Snap y to nearest grid
+      }};
+      node.position(snappedPos);  // Update node's position
+    }}
+
+    // Enable dragging of multiple nodes with snapping
+    cy.on('dragfree', 'node', function(evt) {{
+      let node = evt.target;
+      snapToGrid(node);  // Snap the node to the nearest grid after dragging
+    }});
 
     // Lock the nodes after the layout
     cy.nodes().forEach(node => {{
-      node.lock();  // Lock all nodes to prevent moving
+      node.unlock();  // Lock all nodes to prevent moving
+      snapToGrid(node) // Snap all nodes to grid
     }});
+
   </script>
 </body>
 </html>
