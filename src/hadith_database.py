@@ -175,9 +175,8 @@ class HadithDatabase:
                             break
 
                 if not found:
-                    print(f"Error: Narrator '{narrator_name}' not found in the database.\n\n------")
-                    hadith.print_hadith()
-                    print("-----")
+                    print(f"\n-------\nError: Narrator '{narrator_name}' not found in the database.")
+                    hadith.print()
                     return  # Stop if any narrator is missing
 
             narrator_id = result[0]

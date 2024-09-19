@@ -92,13 +92,15 @@ class Hadith():
 
         return root
 
-    def print_hadith(self):
-        # Fix and print narrators using fix_arabic_text
+    def print(self):
+        print("-----")
+        if self.file_path:
+            print(f"File Path:\n{self.file_path}\n")
+
         print("Narrators:")
         for narrator in self.narrators:
             print(fix_arabic_text(narrator))
 
-        # Fix and print matn using fix_arabic_text
         print("\nMatn:")
         print(fix_arabic_text(self.matn))
 
@@ -106,6 +108,7 @@ class Hadith():
             print("\nComment:")
             print(fix_arabic_text(self.comment))
 
+        print("-----")
 
 if __name__ == "__main__":
     # Example hadith text
@@ -124,5 +127,5 @@ if __name__ == "__main__":
     "شَكَّ أَبُو دَاوُدَ"
     """
 
-    hadith = Hadith(hadith_text)
-    hadith.print_hadith()
+    hadith = Hadith(hadith_text, "Test")
+    hadith.print()
